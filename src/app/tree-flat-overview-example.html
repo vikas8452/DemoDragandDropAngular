@@ -1,14 +1,20 @@
 
-
-    <div  style="float: left ; width: 50%;">
-      <h1>This is the Tree 1</h1>
-    <mat-tree #list1="cdkDropList" cdkDropListConnectedTo="list2"[dataSource]="dataSource" [treeControl]="treeControl" cdkDropList (cdkDropListDropped)="drop($event)">
+<div  cdkDropListGroup class="list-container">
+    <div class="todo-container"  style="float: left; width:50%;">
+      <h1>This is the Tree 1</h1>  
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" cdkDropList (cdkDropListDropped)="drop($event)">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
-        <button mat-icon-button disabled></button>
+       <!--Added the icon in the leaf node-->
+        <button mat-icon-button >
+          <mat-icon class="mat-icon-rtl-mirror" >
+            {{treeControl1.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
         {{node.filename}} : {{node.type}}
       </mat-tree-node>
     
       <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding cdkDrag [cdkDragData]="node" (mouseenter)="dragHover(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
+       
         <button mat-icon-button matTreeNodeToggle
                 [attr.aria-label]="'toggle ' + node.filename">
           <mat-icon class="mat-icon-rtl-mirror">
@@ -20,12 +26,18 @@
     </mat-tree>
   </div>
  
-    <div style="float: right; width: 50%;">
+    <div class="done-container" style="float: right ;width:50%;">
       <h1>This is the Tree 2</h1>
-    <mat-tree #list2="cdkDropList" cdkDropListConnectedTo="list1" [dataSource]="dataSource1" 
+    <mat-tree  [dataSource]="dataSource1" 
     [treeControl]="treeControl1" cdkDropList (cdkDropListDropped)="drop1($event)">
       <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding cdkDrag [cdkDragData]="node" (mouseenter)="dragHover1(node)" (mouseleave)="dragHoverEnd()" (cdkDragStarted)="dragStart()" (cdkDragReleased)="dragEnd()">
-        <button mat-icon-button disabled></button>
+        <!--Added the icon in the leaf node-->
+        <button mat-icon-button >
+
+          <mat-icon class="mat-icon-rtl-mirror" >
+            {{treeControl1.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
         {{node.filename}} : {{node.type}}
       </mat-tree-node>
     
@@ -35,7 +47,7 @@
 
                 
           <mat-icon class="mat-icon-rtl-mirror" >
-            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            {{treeControl1.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
 
         </button>
@@ -43,4 +55,4 @@
       </mat-tree-node>
     </mat-tree>
     </div>
-   
+  </div>

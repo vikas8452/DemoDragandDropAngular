@@ -29,7 +29,7 @@ export class FileFlatNode {
 /**
  * The file structure tree data in string. The data could be parsed into a Json object
  */
-const TREE_DATA = JSON.stringify({
+const TREE_DATA_1 = JSON.stringify({
   Applications: {
     Calendar: 'app',
     Chrome: 'app',
@@ -65,6 +65,15 @@ const TREE_DATA = JSON.stringify({
   }
 });
 
+
+
+const TREE_DATA = JSON.stringify({
+  Applications: {
+    Calendar: 'app',
+    Chrome: 'app',
+    Webstorm: 'app'
+  }
+});
 /**
  * File database, it can build a tree structured Json object from string.
  * Each node in Json object represents a file or a directory. For a file, it has filename and type.
@@ -137,7 +146,7 @@ export class TreeDatabase1 {
 
   initialize() {
     // Parse the string to json object.
-    const dataObject = JSON.parse(TREE_DATA);
+    const dataObject = JSON.parse(TREE_DATA_1);
 
     // Build the tree nodes from Json object. The result is a list of `FileNode` with nested
     //     file node as children.
@@ -202,7 +211,7 @@ export class TreeFlatOverviewExample {
   expandedNodeSet = new Set<string>();
   dragging = false;
   expandTimeout: any;
-  expandDelay = 1000;
+  expandDelay = 2000;
 
 
   //for tree 2;
@@ -230,10 +239,7 @@ export class TreeFlatOverviewExample {
     this.treeControl1 = new FlatTreeControl<FileFlatNode>(this._getLevel1, this._isExpandable1);
     this.dataSource1 = new MatTreeFlatDataSource(this.treeControl1, this.treeFlattener1);
 
-
-    
     treeDatabase1.dataChange.subscribe(data => this.rebuildTreeForData1(data));
- 
   }
 
 // for tree 1
@@ -307,6 +313,7 @@ visibleNodes1(): FileNode[] {
    * */
   drop(event: CdkDragDrop<string[]>) {
     // console.log('origin/destination', event.previousIndex, event.currentIndex);
+  //this.drop1(event);
   console.log("In Tree 1",event);
     // ignore drops outside of the tree
     //if (!event.isPointerOverContainer) return;
@@ -318,6 +325,8 @@ visibleNodes1(): FileNode[] {
 
     // deep clone the data source so we can mutate it
     const changedData = JSON.parse(JSON.stringify(this.dataSource.data));
+
+    const changedData1 = JSON.parse(JSON.stringify(this.dataSource1.data));
 
     // recursive find function to find siblings of node
     function findNodeSiblings(arr: Array<any>, id: string): Array<any> {
@@ -334,14 +343,20 @@ visibleNodes1(): FileNode[] {
     }
 
     // remove the node from its old place
-    const node = event.item.data;
-    const siblings = findNodeSiblings(changedData, node.id);
-    const siblingIndex = siblings.findIndex(n => n.id === node.id);
+     const node = event.item.data;
+     console.log("Node",node);
+     const siblings = findNodeSiblings(changedData1, node.id);
+     const siblingIndex = siblings.findIndex(n => n.id === node.id);
+     console.log("Sibling Index",siblingIndex);
+     console.log("Siblings",siblings);
     const nodeToInsert: FileNode = siblings.splice(siblingIndex, 1)[0];
+    console.log("Node To Insert",nodeToInsert);
 
     // determine where to insert the node
     const nodeAtDest = visibleNodes[event.currentIndex];
-    if (nodeAtDest.id === nodeToInsert.id) return;
+
+    console.log("Node At Dest",nodeAtDest);
+    //if (nodeAtDest.id === nodeToInsert.id) return;
 
     // determine drop index relative to destination array
     let relativeIndex = event.currentIndex; // default if no parent
@@ -464,6 +479,8 @@ console.log("Dest Tree",changedData);
     this.dragging = false;
   }
   dragHover(node: FileFlatNode) {
+   // console.log("Hover in Tree 1",node);
+   // this.treeControl.expand(node);
     if (this.dragging) {
       clearTimeout(this.expandTimeout);
       this.expandTimeout = setTimeout(() => {
@@ -474,19 +491,22 @@ console.log("Dest Tree",changedData);
 
 
   dragHover1(node: FileFlatNode) {
-    if (this.dragging1) {
+    //console.log("Hover in Tree 1",node);
+    this.treeControl1.expand(node);
+    if (this.dragging) {
       clearTimeout(this.expandTimeout1);
       this.expandTimeout1 = setTimeout(() => {
         this.treeControl1.expand(node);
       }, this.expandDelay1);
     }
   }
-
+ 
   dragHoverEnd() {
     if (this.dragging) {
       clearTimeout(this.expandTimeout);
     }
   }
+  
 
   /**
    * The following methods are for persisting the tree expand state
@@ -599,28 +619,5 @@ console.log("Dest Tree",changedData);
       }
     }
     return null;
-  }
-
-
-
-  handleDrop(event, node) {
-    event.preventDefault();
-    // if (node !== this.dragNode) {
-    //   let newItem: FileFlatNode;
-    //   if (this.dragNodeExpandOverArea === 'above') {
-    //     newItem = this.database.copyPasteItemAbove(this.flatNodeMap.get(this.dragNode), this.flatNodeMap.get(node));
-    //   } else if (this.dragNodeExpandOverArea === 'below') {
-    //     newItem = this.database.copyPasteItemBelow(this.flatNodeMap.get(this.dragNode), this.flatNodeMap.get(node));
-    //   } else {
-    //     newItem = this.database.copyPasteItem(this.flatNodeMap.get(this.dragNode), this.flatNodeMap.get(node));
-    //   }
-    //   this.database.deleteItem(this.flatNodeMap.get(this.dragNode));
-    //   this.treeControl.expandDescendants(this.nestedNodeMap.get(newItem));
-    // }
-    // this.dragNode = null;
-    // this.dragNodeExpandOverNode = null;
-    // this.dragNodeExpandOverTime = 0;
-
-    console.log("Handle Drop called");
   }
 }
